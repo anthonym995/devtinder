@@ -7,12 +7,12 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const { firstName, lastName, emailId, password } = req.body;
+  const { firstName, emailId, password } = req.body;
   
-  // if (!firstName || !lastName || !emailId || !password) {
-  //   res.status(400).send("all field must be required");
-  // }
   try {
+    if (!firstName || !emailId || !password) {
+      throw new Error("All field must be required")
+    }
     const newUser = new User(req.body);
     const savedUser = await newUser.save();
     res.send(savedUser);
@@ -40,19 +40,30 @@ app.get("/user", async (req, res) => {
       res.send(userById);
     }
   } catch (err) {
-    console.log("something went wrong");
+    console.log(err.message);
   }
 });
 
-app.patch("/user", async (req, res) => {
+app.patch("/user/:userId", async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.body._id, req.body, {
+    const data = req.body
+    const userId = req.params.userId
+    console.log(userId, data)
+    const allowed = ["firstName", "lastName", "age", "gender", "photoUrl", "about", "skills"]
+    const isAllowed = Object.keys(data).every((k)=> allowed.includes(k))
+    if(!isAllowed) {
+      throw new Error("Update not allowed")
+    }
+    if (data?.skills?.lenght > 10) {
+      throw new Error("Skills cannot be more then 10")
+    }
+    const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
       returnDocument: "after",
       runValidators: true,
     });
     res.send(updatedUser);
   } catch (err) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send(err.message);
   }
 });
 
@@ -61,7 +72,7 @@ app.delete("/user", async (req, res) => {
     const deletedUser = await User.findByIdAndDelete(req.body._id);
     res.send(deletedUser);
   } catch (err) {
-    res.status(400).send("something went wrong");
+    res.status(400).send(err.message);
   }
 });
 
