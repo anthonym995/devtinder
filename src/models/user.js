@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const validator = require("validator")
-
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const userSchema = new Schema(
   {
@@ -21,20 +22,20 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
       validate: (value) => {
-        if(!validator.isEmail(value)) {
-          throw new Error("Email must be valid")
+        if (!validator.isEmail(value)) {
+          throw new Error("Email must be valid");
         }
-      }
+      },
     },
     password: {
       type: String,
       required: true,
       trim: true,
       validate: (value) => {
-        if(!validator.isStrongPassword(value)) {
-          throw new Error("Password must be Strong")
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Password must be Strong");
         }
-      }
+      },
     },
     age: {
       type: Number,
@@ -51,10 +52,10 @@ const userSchema = new Schema(
       type: String,
       default: "https://placehold.jp/150x150.png",
       validate: (value) => {
-        if(!validator.isURL(value)) {
-          throw new Error("Url must be valid")
+        if (!validator.isURL(value)) {
+          throw new Error("Url must be valid");
         }
-      }
+      },
     },
     about: {
       type: String,
@@ -68,6 +69,17 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.methods.getJWT = async function () {
+  const token = await jwt.sign({ _id: this._id }, "Anthony@123", { expiresIn: "7d" });
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (userInputPassword) {
+  const passwordHash = this.password;
+  const isPasswordValid = await bcrypt.compare(userInputPassword, passwordHash);
+  return isPasswordValid;
+};
 
 const User = mongoose.model("User", userSchema);
 

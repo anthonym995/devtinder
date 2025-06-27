@@ -1,21 +1,21 @@
-const adminAuth = (req, res, next) => {
-  const token = "xyz";
-  const isAuthorized = token === "xyz1";
-  if (!isAuthorized) {
-    res.status(401).send("Your Not Authorised to get these data");
-  } else {
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+
+const userAuth = async (req, res, next) => {
+  try {
+    const { token } = req.cookies;
+    if (!token) throw new Error("Invalid token");
+
+    const { _id } = await jwt.verify(token, "Anthony@123");
+
+    const user = await User.findById(_id);
+    if (!user) throw new Error("User not found");
+
+    req.user = user;
     next();
+  } catch (err) {
+    res.status(400).send("Error: " + err.message);
   }
 };
 
-const userAuth = (req, res, next) => {
-  const token = "xyz";
-  const isAuthorized = token === "xyz1";
-  if (!isAuthorized) {
-    res.status(401).send("Your Not Authorised to get these data");
-  } else {
-    next();
-  }
-};
-
-module.exports = { adminAuth, userAuth };
+module.exports = { userAuth };
