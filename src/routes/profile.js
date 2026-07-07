@@ -4,9 +4,13 @@ const { userAuth } = require("../middlewares/auth");
 
 
 profileRouter.get("/profile", userAuth, async (req, res) => {
-  try {
+  try { 
+    const { cookies } = req
     const user = req.user;
     res.send(user);
+
+    console.log("Cookies: ", cookies);
+    const 
   } catch (err) {
     res.status(400).send(err.message);
   }

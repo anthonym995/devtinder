@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
-// "mongodb+srv://anthonym:1kG6QWtYuh7AOkIt@database.uqx0sjr.mongodb.net/?retryWrites=true&w=majority&appName=database";
-const URL = "mongodb+srv://anthonym:1kG6QWtYuh7AOkIt@database.uqx0sjr.mongodb.net/devTinder";
+// username - anthony
+// password - Esw7GPSbu7bp0Oq0
+// appname = devtinder
+
+// mongodb+srv://anthony:<db_password>@devtinder.mtjqzxs.mongodb.net/?appName=devtinder
+const URL = "mongodb+srv://anthony:Esw7GPSbu7bp0Oq0@devtinder.mtjqzxs.mongodb.net/devTinder";
 
 const connectDB = async () => {
   await mongoose.connect(URL);
