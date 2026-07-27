@@ -41,10 +41,43 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     const data = await connectionRequest.save();
 
     if (status === "interested") {
-      res.json({ message: `${req.user.firstName} send connection request to ${toUser.firstName}` });
+     return res.json({ message: `${req.user.firstName} send connection request to ${toUser.firstName}` });
     } else {
-      res.json({ message: `${req.user.firstName} ignored connection request from ${toUser.firstName}` });
+      return res.json({ message: `${req.user.firstName} ignored connection request from ${toUser.firstName}` });
     }
+  } catch (err) {
+    res.status(400).send("Error: " + err.message);
+  }
+});
+
+requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const { status, requestId } = req.params;
+
+    // validate the status parameter
+    const allowedStatus = ["accepted", "rejected"];
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid status type" });
+    }
+
+    // loggedin user should equal to the to userId of the request
+    // status equals to interested
+    // request id should be valid and exist in the database
+    const request = await ConnectionRequest.findOne({
+      _id: requestId,
+      toUserId: loggedInUser._id,
+      status: "interested",
+    });
+
+    if (!request) {
+      return res.status(404).json({ message: "Connection request not found" });
+    }
+
+    request.status = status;
+    await request.save();
+
+    res.json({ message: `Connection request ${status} successfully` });
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }
