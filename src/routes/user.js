@@ -76,7 +76,6 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     const userlist = await User.find({
       $and: [{ _id: { $nin: Array.from(hideUser) } }, { _id: { $ne: loggedUser._id } }],
     })
-      .select(USER_FIELDS)
       .skip(skip)
       .limit(limit);
 
