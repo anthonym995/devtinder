@@ -17,12 +17,12 @@ authRouter.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
     const savedUser = await newUser.save();
-    const toker = savedUser.getJWT();
-    res.cookie("token", toker);
+    const token = savedUser.getJWT();
+    res.cookie("token", token);
     res.json(savedUser);
   } catch (err) {
     console.log(err);
-    res.status(400).send(err.message);
+    res.status(400).json(err);
   }
 });
 
