@@ -32,16 +32,15 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
 
 profileRouter.patch("/profil/password", userAuth, async (req, res) => {
   try {
-    
     const User = req.user;
     const { currentPassword, newPassword } = req.body;
     const isValid = User.validatePassword(currentPassword);
     if (!isValid) throw new Error("Current password is incorrect");
-    validatePassword(newPassword)
-    const newPasswordHash =await bcrypt.hash(newPassword, 10)
+    validatePassword(newPassword);
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
     User.password = newPasswordHash;
-    const data = await User.save()
-    res.json({message: "Password updated Successfully"})
+    const data = await User.save();
+    res.json({ message: "Password updated Successfully" });
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }

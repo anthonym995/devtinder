@@ -4,7 +4,7 @@ const { userAuth } = require("../middlewares/auth");
 const ConnnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
-const USER_FIELDS = ["firstName", "lastName"];
+const USER_FIELDS = ["firstName", "lastName", "emailId", "age", "skills", "gender", "photoUrl", "about"];
 
 userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
   try {
@@ -14,9 +14,9 @@ userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
       status: "interested",
     }).populate("fromUserId", USER_FIELDS);
 
-    // if (connections.length === 0) {
-    //   return res.status(404).json({ message: "No connection requests found" });
-    // }
+    if (connections.length === 0) {
+      return res.status(404).json({ message: "No connection requests found" });
+    }
 
     res.json({ message: "data fetched success", data: connections });
   } catch (err) {
@@ -80,6 +80,16 @@ userRouter.get("/feed", userAuth, async (req, res) => {
       .limit(limit);
 
     res.json({ data: userlist });
+  } catch (err) {
+    res.status(400).send({ message: "Error : " + err.message });
+  }
+});
+
+userRouter.get("/user/:userId", userAuth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId).select(USER_FIELDS);
+    res.json(user);
   } catch (err) {
     res.status(400).send({ message: "Error : " + err.message });
   }
