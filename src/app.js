@@ -7,12 +7,15 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const paymentRouter = require("./routes/payment");
+const chatRouter = require("./routes/chat");
 const cors = require("cors");
 const PORT = process.env.PORT || 3000;
+const http = require("http");
 
 require("./utils/cronjob");
 
 const { setServers } = require("node:dns/promises");
+const initializeSocket = require("./utils/socket");
 setServers(["1.1.1.1", "8.8.8.8"]);
 
 const app = express();
@@ -31,11 +34,15 @@ app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/", paymentRouter);
+app.use("/", chatRouter);
+
+const server = http.createServer(app);
+initializeSocket(server);
 
 connectDB()
   .then(() => {
     console.log("Database connection Successfull..");
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log("server running on port 3000");
     });
   })
