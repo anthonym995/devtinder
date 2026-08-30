@@ -3,16 +3,10 @@ const profileRouter = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const { validateUserEditData, validatePassword } = require("../utils/validate");
 
-const USER_FIELDS = ["firstName", "lastName", "emailId", "age", "skills", "gender", "photoUrl", "about"];
-
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    const userData = {};
-    USER_FIELDS.forEach((field) => {
-      userData[field] = user[field];
-    });
-    res.send(userData);
+    res.send(user);
   } catch (err) {
     res.status(400).send(err.message);
   }
