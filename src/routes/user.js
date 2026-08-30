@@ -14,9 +14,9 @@ userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
       status: "interested",
     }).populate("fromUserId", USER_FIELDS);
 
-    if (connections.length === 0) {
-      return res.status(404).json({ message: "No connection requests found" });
-    }
+    // if (connections.length === 0) {
+    //   return res.status(404).json({ message: "No connection requests found" });
+    // }
 
     res.json({ message: "data fetched success", data: connections });
   } catch (err) {

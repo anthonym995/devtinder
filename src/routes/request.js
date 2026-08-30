@@ -78,7 +78,7 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
     });
 
     if (!request) {
-      return res.status(404).json({ message: "Connection request not found" });
+      return res.json({ message: "Connection request not found" });
     }
 
     request.status = status;
